@@ -6,19 +6,30 @@ export default function Manager() {
   const API = "https://atomquest-backend.onrender.com";
 
   const [goals, setGoals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchGoals = async () => {
-    const res = await fetch(`${API}/goals`);
-    const data = await res.json();
-    setGoals(data);
+    try {
+      const res = await fetch(`${API}/goals`);
+      const data = await res.json();
+      setGoals(data);
+      setLoading(false);
+    } catch (err) {
+      console.log("Error fetching goals:", err);
+      setLoading(false);
+    }
   };
 
   const approveGoal = async (id) => {
-    await fetch(`${API}/goals/approve/${id}`, {
-      method: "PUT"
-    });
+    try {
+      await fetch(`${API}/goals/approve/${id}`, {
+        method: "PUT",
+      });
 
-    fetchGoals();
+      fetchGoals();
+    } catch (err) {
+      console.log("Approve error:", err);
+    }
   };
 
   useEffect(() => {
@@ -28,26 +39,27 @@ export default function Manager() {
   return (
     <div style={{ padding: 20 }}>
 
-      {/* NAVIGATION */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-        <a href="/">Employee</a>
-        <a href="/manager">Manager</a>
-        <a href="/admin">Admin</a>
-      </div>
-
       <h1>Manager Dashboard</h1>
 
-      {goals.map(g => (
-        <div key={g._id}>
-          <h4>{g.title}</h4>
-          <p>{g.employeeId}</p>
-          <p>{g.approved ? "Approved" : "Pending"}</p>
+      {loading ? (
+        <p>Loading goals...</p>
+      ) : goals.length === 0 ? (
+        <p>No goals found</p>
+      ) : (
+        goals.map((g) => (
+          <div key={g._id} style={{ border: "1px solid #ccc", marginBottom: 10, padding: 10 }}>
+            <h3>{g.title}</h3>
+            <p>Employee: {g.employeeId}</p>
+            <p>Status: {g.approved ? "Approved" : "Pending"}</p>
 
-          {!g.approved && (
-            <button onClick={() => approveGoal(g._id)}>Approve</button>
-          )}
-        </div>
-      ))}
+            {!g.approved && (
+              <button onClick={() => approveGoal(g._id)}>
+                Approve
+              </button>
+            )}
+          </div>
+        ))
+      )}
     </div>
   );
 }
