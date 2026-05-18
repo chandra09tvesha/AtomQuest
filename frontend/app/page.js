@@ -1,4 +1,9 @@
-"use client";
+<div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+  <a href="/">Employee</a>
+  <a href="/manager">Manager</a>
+  <a href="/admin">Admin</a>
+</div>
+  "use client";
 
 import { useState, useEffect } from "react";
 
