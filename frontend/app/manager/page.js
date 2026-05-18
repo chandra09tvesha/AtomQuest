@@ -1,31 +1,21 @@
-<div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-  <a href="/">Employee</a>
-  <a href="/manager">Manager</a>
-  <a href="/admin">Admin</a>
-</div>
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Manager() {
-  const API = "https://your-backend-url.onrender.com";
+  const API = "https://atomquest-backend.onrender.com";
+
   const [goals, setGoals] = useState([]);
 
   const fetchGoals = async () => {
-    const res = await fetch(`${API}/goals/emp1`);
-    setGoals(await res.json());
+    const res = await fetch(`${API}/goals`);
+    const data = await res.json();
+    setGoals(data);
   };
 
-  const approve = async (id) => {
-    await fetch(`${API}/goals/approve/${id}`, { method: "PUT" });
-    fetchGoals();
-  };
-
-  const updateStatus = async (id, status) => {
-    await fetch(`${API}/goals/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
+  const approveGoal = async (id) => {
+    await fetch(`${API}/goals/approve/${id}`, {
+      method: "PUT"
     });
 
     fetchGoals();
@@ -37,19 +27,25 @@ export default function Manager() {
 
   return (
     <div style={{ padding: 20 }}>
+
+      {/* NAVIGATION */}
+      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        <a href="/">Employee</a>
+        <a href="/manager">Manager</a>
+        <a href="/admin">Admin</a>
+      </div>
+
       <h1>Manager Dashboard</h1>
 
-      {goals.map((g) => (
-        <div key={g._id} style={{ margin: 10, padding: 10, border: "1px solid gray" }}>
-          <h3>{g.title}</h3>
+      {goals.map(g => (
+        <div key={g._id}>
+          <h4>{g.title}</h4>
+          <p>{g.employeeId}</p>
+          <p>{g.approved ? "Approved" : "Pending"}</p>
 
-          <button onClick={() => approve(g._id)}>Approve</button>
-
-          <select onChange={(e) => updateStatus(g._id, e.target.value)}>
-            <option>Not Started</option>
-            <option>On Track</option>
-            <option>Completed</option>
-          </select>
+          {!g.approved && (
+            <button onClick={() => approveGoal(g._id)}>Approve</button>
+          )}
         </div>
       ))}
     </div>
