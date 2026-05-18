@@ -3,7 +3,7 @@
   <a href="/manager">Manager</a>
   <a href="/admin">Admin</a>
 </div>
-  "use client";
+"use client";
 
 import { useState, useEffect } from "react";
 
